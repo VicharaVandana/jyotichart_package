@@ -199,6 +199,8 @@ SouthChart_offsets4mAries = {  "aries"  :   { "x": 0, "y": 0},
                         }
 
 SouthChart_AscendantPositionAries = {"x": 202, "y": 83}
+
+SouthChart_CenterTextPositionAries = {"x": 155, "y": 60}
                         
 
 base_coordinates_sc = [{"x":155, "y":40},   #planet 1
@@ -214,12 +216,13 @@ base_coordinates_sc = [{"x":155, "y":40},   #planet 1
 
 ################################### NORTH CHART ###################################
 class NorthChart:
-    def __init__(self, chartname, personname, IsFullChart = True):
+    def __init__(self, chartname, personname, IsFullChart = True, type = "planet"):
         self.chartname = chartname
         self.personname = personname
         self.chartcfg = reset_chartcfg_nc()
         self.ascendantsign = "NotSet"
         self.fullchart = IsFullChart
+        self.type = type
         return
     
     def __str__(self):
@@ -268,9 +271,26 @@ class NorthChart:
         KETU:{"symbol":"", "aspect_symbol":"☋", "retro":True, "house_num":0, "colour":"black", "pos": {"x":0, "y":0},"aspectpos":[],"isUpdated":False}
     }
     
-    
+    numeric_entries = [ [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white'], 
+                        [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white'], 
+                        [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white']  ]
+
+    def set_numval2house(self, housenum, value, clr = 'white'):
+        if(self.type != "numeric"):
+            return(f'''Chart Type Error: set_numval2house method cannot be invoked for given chart type {self.type}.''')
+        if (housenum not in range(1,13)):
+            return(f'''Input Error: The given housenum {housenum} is not valid. it must be a integer value from 1 to 12.''')
+        
+        self.numeric_entries[housenum-1][0] = value
+        self.numeric_entries[housenum-1][1] = clr
+
+        return("Success")
+        
+
     planetindex = [1,1,1,1,1,1,1,1,1,1,1,1]
     def add_planet(self,planet,symbol,housenum,retrograde = False,aspectsymbol="Default",colour='white'):
+        if(self.type != "planet"):
+            return(f'''Chart Type Error: add_planet method cannot be invoked for given chart type {self.type}.''')
         #Validating input parameters
         if planet not in self.planets:
             return(f'''Input Error: The given planet {planet} is invalid.''')
@@ -321,6 +341,8 @@ class NorthChart:
         return("Success")
 
     def delete_planet(self,planet):
+        if(self.type != "planet"):
+            return(f'''Chart Type Error: delete_planet method cannot be invoked for given chart type {self.type}.''')
         #Validating input parameters
         if planet not in self.planets:
             return(f'''Input Error: The given planet {planet} is invalid.''')
@@ -366,10 +388,18 @@ class NorthChart:
             print("Error : Chart is not ready to be drawn as ascendant sign is not set yet")
             return False
         if (self.fullchart == True):
-            for planet in self.planets:
-                if(self.planets[planet]["isUpdated"] == False):
-                    print(f"Error : Chart is not ready to be drawn as planet {planet} is not added yet")
-                    return False
+            if (self.type == "planet"):
+                for planet in self.planets:
+                    if(self.planets[planet]["isUpdated"] == False):
+                        print(f"Error : Chart is not ready to be drawn as planet {planet} is not added yet")
+                        return False
+            elif (self.type == "numeric"):
+                for item in self.numeric_entries:
+                    if(item[0] == 9999):
+                        print(f"Error : Chart is not ready to be drawn as numeric value for all houses are not provided yet.")
+                        return False
+            else:
+                pass
         return True
     
     def draw(self,location,filename,format="svg"):
@@ -384,18 +414,19 @@ class NorthChart:
         if(self.__isObjectDrawReady() == False):
             return(f'''The chart is not ready to be drawn yet as all the needed inputs are not provided!!!''')
 
-        svgstatus = create_chartSVG_nc(self,location,filename)
+        svgstatus = create_chartSVG_nc(self,location,filename, self.type)
 
         return(svgstatus)
 
 ################################### SOUTH CHART ###################################
 class SouthChart:
-    def __init__(self, chartname, personname, IsFullChart = True):
+    def __init__(self, chartname, personname, IsFullChart = True, type = "planet"):
         self.chartname = chartname
         self.personname = personname
         self.chartcfg = reset_chartcfg_sc()
         self.ascendantsign = "NotSet"
         self.fullchart = IsFullChart
+        self.type = type
         return
     
     def __str__(self):
@@ -440,9 +471,25 @@ class SouthChart:
         RAHU:{"symbol":"", "aspect_symbol":"☊", "retro":True, "house_num":0, "colour":"black", "pos": {"x":0, "y":0},"aspectpos":[],"isUpdated":False},
         KETU:{"symbol":"", "aspect_symbol":"☋", "retro":True, "house_num":0, "colour":"black", "pos": {"x":0, "y":0},"aspectpos":[],"isUpdated":False}
     }    
-    
+    numeric_entries = [ [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white'], 
+                        [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white'], 
+                        [9999,'white'], [9999,'white'], [9999,'white'], [9999,'white']  ]
+
+    def set_numval2house(self, housenum, value, clr = 'white'):
+        if(self.type != "numeric"):
+            return(f'''Chart Type Error: set_numval2house method cannot be invoked for given chart type {self.type}.''')
+        if (housenum not in range(1,13)):
+            return(f'''Input Error: The given housenum {housenum} is not valid. it must be a integer value from 1 to 12.''')
+        
+        self.numeric_entries[housenum-1][0] = value
+        self.numeric_entries[housenum-1][1] = clr
+
+        return("Success")
+
     planetindex = [1,1,1,1,1,1,1,1,1,1,1,1]
     def add_planet(self,planet,symbol,housenum,retrograde = False,aspectsymbol="Default",colour='white'):
+        if(self.type != "planet"):
+            return(f'''Chart Type Error: add_planet method cannot be invoked for given chart type {self.type}.''')
         if (self.ascendantsign == "NotSet"):
             return(f'''Invocation Order Error: The plannet cannot be added before setting the ascendant sign.''')
         #Validating input parameters
@@ -497,6 +544,8 @@ class SouthChart:
         return("Success")
     
     def delete_planet(self,planet):
+        if(self.type != "planet"):
+            return(f'''Chart Type Error: delete_planet method cannot be invoked for given chart type {self.type}.''')
         #Validating input parameters
         if planet not in self.planets:
             return(f'''Input Error: The given planet {planet} is invalid.''')
@@ -542,10 +591,18 @@ class SouthChart:
             print("Error : Chart is not ready to be drawn as ascendant sign is not set yet")
             return False
         if (self.fullchart == True):
-            for planet in self.planets:
-                if(self.planets[planet]["isUpdated"] == False):
-                    print(f"Error : Chart is not ready to be drawn as planet {planet} is not added yet")
-                    return False
+            if (self.type == "planet"):
+                for planet in self.planets:
+                    if(self.planets[planet]["isUpdated"] == False):
+                        print(f"Error : Chart is not ready to be drawn as planet {planet} is not added yet")
+                        return False
+            elif (self.type == "numeric"):
+                for item in self.numeric_entries:
+                    if(item[0] == 9999):
+                        print(f"Error : Chart is not ready to be drawn as numeric value for all houses are not provided yet.")
+                        return False
+            else:
+                pass
         return True
     
     def draw(self,location,filename,format = 'svg'):
@@ -560,7 +617,7 @@ class SouthChart:
         if(self.__isObjectDrawReady() == False):
             return(f'''The chart is not ready to be drawn yet as all the needed inputs are not provided!!!''')
 
-        svgstatus = create_chartSVG_sc(self,location,filename)
+        svgstatus = create_chartSVG_sc(self,location,filename, self.type)
 
         return(svgstatus)
 
@@ -671,6 +728,20 @@ def write_signnumOnChart_ssc(chartSVG, signclr, ascendantsign):
     chartSVG.write(f'''  <text id ="{ascendantsign}Asc" x="{pxAsc}" y="{pyAsc}" fill="{signclr}" class="sign-num">Asc</text>\n''')
     return
 
+#Logic must be written shyam
+def write_numericOnChart_ssc(chartSVG, numeric, ascendantsign):
+    chartSVG.write('\n  <!-- ********** Center Text ********** -->\n')
+    for housenum in range(1,13):
+        sign = get_signofsign(housenum, ascendantsign)
+        val = numeric[housenum-1][0]
+        clr = numeric[housenum-1][1]
+        if(val != 9999):
+            pxAsc = SouthChart_CenterTextPositionAries["x"] + SouthChart_offsets4mAries[sign.lower()]["x"]
+            pyAsc = SouthChart_CenterTextPositionAries["y"] + SouthChart_offsets4mAries[sign.lower()]["y"]
+            
+            chartSVG.write(f'''  <text id ="{sign}Num" x="{pxAsc}" y="{pyAsc}" fill="{clr}" class="center-text">{val}</text>\n''')
+    return
+
 def write_planetsOnChart_ssc(chartSVG, planets):
     chartSVG.write('\n  <!-- ********** Planets ********** -->\n')
     
@@ -710,7 +781,7 @@ def write_planetsAspectsOnChart_ssc(chartSVG, planets):
             chartSVG.write(Planet_SVGstring)
     return
 
-def create_chartSVG_sc(chartObj,location,chartSVGfilename):
+def create_chartSVG_sc(chartObj,location,chartSVGfilename, charttype):
     # open or create chart file 
     if((location[-1] == '\\') or (location[-1] == '/')):
         chartSVGFullname = f'{location}{chartSVGfilename}.svg'
@@ -728,6 +799,7 @@ def create_chartSVG_sc(chartObj,location,chartSVGfilename):
     chartSVG.write('  <style>\n')
     chartSVG.write('    .sign-num { font: bold 20px sans-serif; }\n')
     chartSVG.write('    .planet { font: bold 14px sans-serif; }\n')
+    chartSVG.write('    .center-text { font: bold 30px sans-serif; }\n')
     chartSVG.write('    .aspect { font: bold 16px sans-serif; }\n')
     chartSVG.write('  </style>\n')
     chartSVG.write('  <!-- ********** Chart Diagram ********** -->\n')
@@ -735,10 +807,14 @@ def create_chartSVG_sc(chartObj,location,chartSVGfilename):
     #create chart South indian style
     draw_classicSouthChartSkeleton(chartSVG, chartObj.chartcfg)    #Create skeleton
     write_signnumOnChart_ssc(chartSVG, chartObj.chartcfg["sign-colour"],chartObj.ascendantsign)    #Update the sign numbers on chart skeleton
-    write_planetsOnChart_ssc(chartSVG, chartObj.planets)    #Update the planets on chart for every house
-    if(chartObj.chartcfg["aspect-visibility"] == True):
-        write_planetsAspectsOnChart_ssc(chartSVG, chartObj.planets)
-    
+    if(charttype == "planet"):
+        write_planetsOnChart_ssc(chartSVG, chartObj.planets)    #Update the planets on chart for every house
+        if(chartObj.chartcfg["aspect-visibility"] == True):
+            write_planetsAspectsOnChart_ssc(chartSVG, chartObj.planets)
+    elif(charttype == "numeric"):
+        write_numericOnChart_ssc(chartSVG,chartObj.numeric_entries,chartObj.ascendantsign)
+    else:
+        pass
     #SVG chart End section
     chartSVG.write('\n  Sorry, your browser does not support inline SVG.\n')
     chartSVG.write('</svg>\n')
@@ -822,6 +898,23 @@ def write_signnumOnChart_nsc(chartSVG, signclr, signnumlist):
     chartSVG.write(f'''  <text id ="karch" x="298" y="98" fill="{signclr}" class="sign-num">{signnumlist[11]:02}</text>\n''')
     return
 
+def write_NumericsOnChart_nsc(chartSVG, numericlist):     
+    
+    chartSVG.write('\n  <!-- ********** AshtakaVarga Points ********** -->\n')
+    chartSVG.write(f'''  <text id ="tanEntry" x="187" y="115" fill="{numericlist[0][1]}" class="center-text">{numericlist[0][0]}</text>
+  <text id ="dhanEntry" x="90" y="60" fill="{numericlist[1][1]}" class="center-text">{numericlist[1][0]}</text>
+  <text id ="anujEntry" x="22" y="120" fill="{numericlist[2][1]}" class="center-text">{numericlist[2][0]}</text>
+  <text id ="maataEntry" x="90" y="218" fill="{numericlist[3][1]}" class="center-text">{numericlist[3][0]}</text>
+  <text id ="santaanEntry" x="22" y="320" fill="{numericlist[4][1]}" class="center-text">{numericlist[4][0]}</text>
+  <text id ="rogEntry" x="95" y="380" fill="{numericlist[5][1]}" class="center-text">{numericlist[5][0]}</text>
+  <text id ="dampathyaEntry" x="195" y="310" fill="{numericlist[6][1]}" class="center-text">{numericlist[6][0]}</text>
+  <text id ="aayuEntry" x="290" y="380" fill="{numericlist[7][1]}" class="center-text">{numericlist[7][0]}</text>
+  <text id ="bhagyaEntry" x="355" y="320" fill="{numericlist[8][1]}" class="center-text">{numericlist[8][0]}</text>
+  <text id ="karmaEntry" x="290" y="220" fill="{numericlist[9][1]}" class="center-text">{numericlist[9][0]}</text>
+  <text id ="laabEntry" x="355" y="120" fill="{numericlist[10][1]}" class="center-text">{numericlist[10][0]}</text>
+  <text id ="karchEntry" x="287" y="60" fill="{numericlist[11][1]}" class="center-text">{numericlist[11][0]}</text>\n''')
+    return
+
 def write_planetsOnChart_nsc(chartSVG, planets):
     chartSVG.write('\n  <!-- ********** Planets ********** -->\n')
     
@@ -861,7 +954,7 @@ def write_planetsAspectsOnChart_nsc(chartSVG, planets):
             chartSVG.write(Planet_SVGstring)
     return
 
-def create_chartSVG_nc(chartObj,location,chartSVGfilename):
+def create_chartSVG_nc(chartObj,location,chartSVGfilename, charttype):
     ''' Creates SVG image of astrology chart as per the chart draw configuration
         with data in division. The divisional chart is mentioned by division and 
         hence named accordingly'''
@@ -882,6 +975,7 @@ def create_chartSVG_nc(chartObj,location,chartSVGfilename):
     chartSVG.write('  <style>\n')
     chartSVG.write('    .sign-num { font: bold 22px sans-serif; }\n')
     chartSVG.write('    .planet { font: bold 20px sans-serif; }\n')
+    chartSVG.write('    .center-text { font: bold 30px sans-serif; }\n')
     chartSVG.write('    .aspect { font: bold 22px sans-serif; }\n')
     chartSVG.write('  </style>\n')
     chartSVG.write('  <!-- ********** Chart Diagram ********** -->\n')
@@ -889,10 +983,14 @@ def create_chartSVG_nc(chartObj,location,chartSVGfilename):
     #create chart North indian style
     draw_classicNorthChartSkeleton(chartSVG, chartObj.chartcfg)    #Create skeleton
     write_signnumOnChart_nsc(chartSVG, chartObj.chartcfg["sign-colour"],chartObj.housesigns)    #Update the sign numbers on chart skeleton
-    write_planetsOnChart_nsc(chartSVG, chartObj.planets)    #Update the planets on chart for every house
-    if(chartObj.chartcfg["aspect-visibility"] == True):
-        write_planetsAspectsOnChart_nsc(chartSVG, chartObj.planets)
-    
+    if (charttype == "planet"):
+        write_planetsOnChart_nsc(chartSVG, chartObj.planets)    #Update the planets on chart for every house
+        if(chartObj.chartcfg["aspect-visibility"] == True):
+            write_planetsAspectsOnChart_nsc(chartSVG, chartObj.planets)
+    elif (charttype == "numeric"):
+        write_NumericsOnChart_nsc(chartSVG, chartObj.numeric_entries)
+    else:
+        pass
     #SVG chart End section
     chartSVG.write('\n  Sorry, your browser does not support inline SVG.\n')
     chartSVG.write('</svg>\n')
@@ -903,19 +1001,31 @@ def create_chartSVG_nc(chartObj,location,chartSVGfilename):
     return "Success"
 
 if __name__ == '__main__':
-    mychart = SouthChart("Lagna", "Shyam Bhat")
+    mychart = SouthChart("Lagna", "Shyam Bhat",type="numeric")
     mychart.set_ascendantsign("Capricorn")
     #print(mychart.housesigns)
-    mychart.add_planet(SUN,"Su", 9)
-    mychart.add_planet(MOON,"Mo", 9)
-    mychart.add_planet(MARS,"Ma", 10)
-    mychart.add_planet(MERCURY,"Me", 9)
-    mychart.add_planet(JUPITER,"Ju", 8)
-    mychart.add_planet(VENUS,"Ve", 8)
-    mychart.add_planet(SATURN,"Sa", 1,colour="yellow")
-    mychart.add_planet(RAHU,"Ra", 12)
-    mychart.add_planet(KETU,"Ke", 6)
-    mychart.updatechartcfg(aspect=False, clr_Asc='lime')
+    #mychart.add_planet(SUN,"Su", 9)
+    #mychart.add_planet(MOON,"Mo", 9)
+    #mychart.add_planet(MARS,"Ma", 10)
+    #mychart.add_planet(MERCURY,"Me", 9)
+    #mychart.add_planet(JUPITER,"Ju", 8)
+    #mychart.add_planet(VENUS,"Ve", 8)
+    #mychart.add_planet(SATURN,"Sa", 1,colour="yellow")
+    #mychart.add_planet(RAHU,"Ra", 12)
+    #mychart.add_planet(KETU,"Ke", 6)
+    #mychart.updatechartcfg(aspect=False, clr_Asc='lime')
+    mychart.set_numval2house(1,24,"lime")   # 1st House
+    mychart.set_numval2house(2,240,"red")   # 2nd House
+    mychart.set_numval2house(3,55)   # 3rd House
+    mychart.set_numval2house(4,7)   # 4th House
+    mychart.set_numval2house(5,735)   # 5th House
+    mychart.set_numval2house(6,142)   # 6th House
+    mychart.set_numval2house(7,3342)   # 7th House
+    mychart.set_numval2house(8,43)   # 8th House
+    mychart.set_numval2house(9,97)   # 9th House
+    mychart.set_numval2house(10,163)   # 10th House
+    mychart.set_numval2house(11,56)   # 11th House
+    mychart.set_numval2house(12,43)   # 12th House
     
-    print(mychart.draw("C:\\Users\hp\Downloads\\astrocharts", "LagnaChart", "svg"))
+    print(mychart.draw("C:\\Users\hp\Downloads\\astrocharts", "SouthNumChart"))
     print(mychart)

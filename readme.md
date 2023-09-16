@@ -3,6 +3,23 @@
 The Sample charts generated for north indian and south indian style is shown below
 <img title="Sample Charts" alt="Cannot be displayed in your browser" src="chartsample.png" width="700">
 
+---
+
+## Python package
+Python Package jyotichart can be found here: https://pypi.org/project/jyotichart/ 
+
+Current Version: 2.0.0
+
+To install this package please run this command in command prompt using pip:
+```cmd
+pip install jyotichart 
+```
+---
+## GitHub Repository
+Repository : https://github.com/VicharaVandana/jyotichart_package 
+Author: Shyam Bhat
+Email ID: bhatshyam.modernastrologer@gmail.com
+---
 ## Jyotichart as blackbox
 > This package takes astrological planetery and ascendant positions as input and draws the astrological chart and gives it as output as svg image file saved in given location. 
 
@@ -148,6 +165,141 @@ Below Code snippet gives you an example of plotting Full North Indian chart whic
 
 ```
 
+--- 
+
+## Steps for Numerical Charts 
+
+The Numercal charts are the astrological charts where each house has been assigned a number and no planets placements are there. For example Ashtakavarga chart or bhava-bala chart etc. 
+
+For this the procedure and steps is almost same as for planetery astrological charts with some differences. These steps are shown below independently. 
+
+1. import the package **jyotichart** in the module.
+    ```python
+        import jyotichart as chart
+    ```
+
+2. Create an instance object of NorthIndian/SouthIndian chart class by passing **chart name** and **person name** whose astrological chart you want to create. There is an optional parrameter too called **IsFullChart** which is by default is **True**. If you keep this parameter true then the positions oif all the planets need to be provided before drawing the chart. Hence the name full chart. If you make this parameter as **False**, that means this is a partial chart which can be drawn with no numbers or with subset of numbers for houses. And the parameter for making this numerical chart is **type**. This parameter value is by default "planetery". But to make numerical chart you must make this parameter as "numerical"
+    ```python
+        #For full NorthIndian chart
+        mychart1 = chart.NorthChart("Lagna", "Shyam Bhat", type="numeric")
+
+        #For partial NorthIndian chart
+        mychart2 = chart.NorthChart("Special", "Deepa Saravi", IsFullChart = False, type="numeric")
+
+        #For full SouthIndian chart
+        mychart3 = chart.SouthChart("Lagna", "Shyam Bhat", type="numeric")
+
+        #For partial SouthIndian chart
+        mychart4 = chart.SouthChart("Special", "Deepa Saravi", IsFullChart = False, type="numeric")
+    ```
+    > From now on this object will be refered in code snippets as `mychart`. But in your code you have to take one of `mychart1`, `mychart2`, `mychart3` or `mychart4` depending on your needs. 
+
+3. The Ascendant Sign has to be provided which will be the first house in the chart. This is done by invoking object method `set_ascendantsign()` and the sign is passed as input parameter. There are 12 signs in astrology and pass anyone from below list as a string to this method: `"Aries"`, `"Taurus"`, `"Gemini"`, `"Cancer"`, `"Leo"`, `"Virgo"`, `"Libra"`, `"Scorpio"`, `"Saggitarius"`, `"Capricorn"`, `"Aquarius"`, `"Pisces"`. Make sure the parameter is same as given above. If case and spelling is wrong then the functionality will not work. For example if you want to set the ascendant sign to Capricorn then you can do as shown below:
+    ```python
+        mychart.set_ascendantsign("Capricorn")
+    ```
+
+4. Set the numerical value to each of 12 houses. One numerical value can be set to one house and this can be done using the method `set_numval2house()`. This method takes 3 input parameters as shown below:
+    - **housenum** : This is a integer value between 1 to 12. As the name suggests it must be the house number for which the numerical value is to be provided. If numerical value has to be provided for 5th house then house number must be 5 and so on. Remember there are only 12 houses in jyotishya and so this parameter value cannot be more than 12 or even 0. values 0 and 13 and above are not valid. This is a mandatory parameter.
+
+    - **value** : This is the numerical value which this method is intended to provide to that house. Its an integer value. This is a mandatory parameter. 
+
+    - **clr** : This is an optional parameter. Its default value is `"white"`. This is the colour of the number shown in the chart. If you give this parameter value as `"red"` then that number will be displayed as Red in chart generated. 
+
+    Below code snippet shows the usage of this method for all 12 houses
+    ```python 
+        mychart.set_numval2house(1,24,"lime")   # 1st House
+        mychart.set_numval2house(2,240,"red")   # 2nd House
+        mychart.set_numval2house(3,55)   # 3rd House
+        mychart.set_numval2house(4,7)   # 4th House
+        mychart.set_numval2house(5,735)   # 5th House
+        mychart.set_numval2house(6,142)   # 6th House
+        mychart.set_numval2house(7,3342)   # 7th House
+        mychart.set_numval2house(8,43)   # 8th House
+        mychart.set_numval2house(9,97)   # 9th House
+        mychart.set_numval2house(10,163)   # 10th House
+        mychart.set_numval2house(11,56)   # 11th House
+        mychart.set_numval2house(12,43)   # 12th House
+        
+    ```
+
+   
+
+5. Now since you provided all the details of ascendant and planets you are ready to draw the chart. But before doing that you even have option to update the chart coinfigurations like changing the chart colours like line colour, background colour etc and enabling or disabling the aspect visibilities etc in the chart before plotting. This can be done by using the method `updatechartcfg()`. This method has all optional parameters with each parameter representing a different chart property. If you invoke this method without any parameters then ot resets all configurations with default values. If you want to update some properties then you can provide thoise corresponding parameters only with your chosen values. The parameters of this method are given below:
+    - **clr_background** : Default value is `'black'`. It's a string value indicating the colour of the background of the chart. 
+    - **clr_outbox** : Default value is `'red'`. It's a string value indicating the colour of the outer square box of the chart. 
+    - **clr_line** : Default value is `'yellow'`. It's a string value indicating the colour of the lines of the chart.
+    - **clr_sign** / **clr_Asc** : Default value is `'pink'`. It's a string value indicating the colour of the sign numbers on the chart for north indian chart and colour of Asc in south indian chart. 
+    - **clr_houses** : Default value is `'black'` for all 12 houses or signs. It's a list of 12 values with each value being string value indicating the colour of the corresponding house for north indian chart and signs for south indian chart on the chart. 
+
+    Below code snippet demonstrates the usage of method `updatechartcfg()`. Here we will make aspects invisible on the chart. Also the background colour will be made yellow, line colour be made white, sign colour be made lime green. houses 1,5,9 be made green. houses 6,8,12 be made red and remaining houses will be kept black. Remember all config changes has to be made in a single call. if invoked multiple times then oit will be as if only last call was valid and all previous calls will be nullified.
+
+    ```python
+        housecolours = ['black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black', 'black']
+        housecolours[0] = 'green'   #FIRST HOUSE OR ARIES (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+        housecolours[4] = 'green'   #FIFTH HOUSE OR LEO (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+        housecolours[8] = 'green'   #NINTH HOUSE OR SAGGITARIUS (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+        housecolours[5] = 'red'   #SIXTH HOUSE OR VIRGO (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+        housecolours[7] = 'red'   #EIGHTH HOUSE OR SCORPIO (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+        housecolours[11] = 'red'   #TWELFTH HOUSE OR PISCES (HOUSE FOR NORTH STYLE AND SIGN FOR SOUTH STYLE)
+
+        #For north indian style
+        mychart.updatechartcfg(clr_background='yellow', clr_line='white', clr_sign='lime', clr_houses=housecolours)
+
+        #For south iundian style
+        mychart.updatechartcfg(clr_background='yellow', clr_line='white', clr_Asc='lime', clr_houses=housecolours)
+
+    ```
+
+
+6. Once all the needed inputs are given, we can draw the chart now by invoking the method `draw`. This method takes just 2 input parameters as shown below:
+    - **location** : Where the drawn chart has to be stored. This has to be a valid location in your current computer and the code needs to have write access to that location.
+    - **filename** : Name of the file as a alphanumeric string which will be given to the svg image to be drawn. Please **do not include** the extension in this parameter. 
+
+    The below code sinippet demonstrates usage of `draw` method to create the north indian style chart in svg format. 
+
+    ```python
+        mychart.draw("C:/Users/hp/Downloads/astrocharts", "NumberChart")
+    ```
+
+    This results in chart generated as shown below:
+
+    <img src="NorthNumChart.svg" alt="This image cant be displayed here." width="250"/>
+    <img src="SouthNumChart.svg" alt="This image cant be displayed here." width="375"/>
+
+
+The Complete code snippet is combined and provided below:
+
+```python
+import jyotichart as chart
+
+#For full NorthIndian chart
+mychart = chart.NorthChart("Lagna", "Shyam Bhat", type="numeric")
+
+#For partial NorthIndian chart
+mychart = chart.NorthChart("Special", "Deepa Saravi", IsFullChart = False, type="numeric")
+
+#For full SouthIndian chart
+mychart = chart.SouthChart("Lagna", "Shyam Bhat", type="numeric")
+
+#For partial SouthIndian chart
+mychart = chart.SouthChart("Special", "Deepa Saravi", IsFullChart = False, type="numeric")
+
+mychart.set_numval2house(1,24,"lime")   # 1st House
+mychart.set_numval2house(2,240,"red")   # 2nd House
+mychart.set_numval2house(3,55)   # 3rd House
+mychart.set_numval2house(4,7)   # 4th House
+mychart.set_numval2house(5,735)   # 5th House
+mychart.set_numval2house(6,142)   # 6th House
+mychart.set_numval2house(7,3342)   # 7th House
+mychart.set_numval2house(8,43)   # 8th House
+mychart.set_numval2house(9,97)   # 9th House
+mychart.set_numval2house(10,163)   # 10th House
+mychart.set_numval2house(11,56)   # 11th House
+mychart.set_numval2house(12,43)   # 12th House
+
+mychart.draw("C:/Users/hp/Downloads/astrocharts", "NumberChart")
+```
 
 
 
